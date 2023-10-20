@@ -235,9 +235,14 @@ def version() -> None:
         'A script file to use with the the "path" config type. '
         'Remember that use the name of this file in your "path". It will be next to the config.'), show_default=False)
 @click.option('--bundle-id', '-b', default=None, help='The bundleid to set when codesigning the IPA')
+@click.option('--without-signing-files', '-S', is_flag=True, help='Remove signing related files in the IPA', show_default=False)
+@click.option('--without-plugins', '-r', is_flag=True, help='Remove signing related files in the IPA', show_default=False)
+@click.option('--without-watchapp', '-w', is_flag=True, help='Remove watchapp related files in the IPA', show_default=False)
+@click.option('--without-xctests', '-x', is_flag=True, help='Remove xctests related files in the IPA', show_default=False)
 def patchipa(source: str, gadget_version: str, codesign_signature: str, provision_file: str, binary_name: str,
              skip_cleanup: bool, pause: bool, unzip_unicode: bool, gadget_config: str, script_source: str,
-             bundle_id: str) -> None:
+             bundle_id: str, without_signing_files:bool, without_plugins:bool, without_watchapp:bool, 
+             without_xctests:bool) -> None:
     """
         Patch an IPA with the FridaGadget dylib.
     """

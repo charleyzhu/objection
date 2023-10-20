@@ -13,7 +13,9 @@ from ..utils.patchers.ios import IosGadget, IosPatcher
 def patch_ios_ipa(source: str, codesign_signature: str, provision_file: str, binary_name: str,
                   skip_cleanup: bool, unzip_unicode: bool, gadget_version: str = None,
                   pause: bool = False, gadget_config: str = None, script_source: str = None,
-                  bundle_id: str = None) -> None:
+                  bundle_id: str = None, without_signing_files:bool = False, 
+                  without_plugins:bool = False, without_watchapp:bool = False, 
+                  without_xctests:bool = False) -> None:
     """
         Patches an iOS IPA by extracting, injecting the Frida dylib,
         codesigning the dylib and app executable and rezipping the IPA.
@@ -29,6 +31,10 @@ def patch_ios_ipa(source: str, codesign_signature: str, provision_file: str, bin
         :param pause:
         :param gadget_config:
         :param script_source:
+        :param without_signing_files:
+        :param without_plugins:
+        :param without_watchapp:
+        :param without_xctests:
         :return:
     """
 
@@ -88,7 +94,9 @@ def patch_ios_ipa(source: str, codesign_signature: str, provision_file: str, bin
 
         input('Press ENTER to continue...')
 
-    patcher.archive_and_codesign(original_name=source, codesign_signature=codesign_signature)
+    patcher.archive_and_codesign(original_name=source, codesign_signature=codesign_signature, 
+        without_signing_files=without_signing_files, without_plugins=without_plugins, 
+        without_watchapp=without_watchapp, without_xctests=without_xctests)
 
     click.secho('Copying final ipa from {0} to current directory...'.format(patcher.get_patched_ipa_path()))
     shutil.copyfile(

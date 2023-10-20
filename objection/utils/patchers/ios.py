@@ -392,7 +392,7 @@ class IosPatcher(BasePlatformPatcher):
                 codesign_signature,
                 dylib]))
 
-    def archive_and_codesign(self, original_name: str, codesign_signature: str) -> None:
+    def archive_and_codesign(self, original_name: str, codesign_signature: str, without_signing_files:bool, without_plugins:bool, without_watchapp:bool, without_xctests:bool) -> None:
         """
             Creates a new archive of the patched IPA.
 
@@ -422,8 +422,8 @@ class IosPatcher(BasePlatformPatcher):
         self.patched_codesigned_ipa_path = os.path.join(self.temp_directory, os.path.basename(
             '{0}-frida-codesigned.ipa'.format(os.path.splitext(original_name)[0])))
 
-        ipa_codesign = delegator.run(self.list2cmdline([
-            self.required_commands['applesign']['location'],
+        commandList = [
+             self.required_commands['applesign']['location'],
             '--identity',
             codesign_signature,
             '--mobileprovision',
@@ -433,8 +433,18 @@ class IosPatcher(BasePlatformPatcher):
             '--clone-entitlements',
             '--output',
             self.patched_codesigned_ipa_path,
-            self.patched_ipa_path
-        ]), timeout=self.command_run_timeout)
+            self.patched_ipa_path]
+        
+        if without_signing_files:
+            commandList.append('--without-signing-files')
+        if without_plugins:
+            commandList.append('--without-plugins')
+        if without_watchapp:
+            commandList.append('--without-watchapp')
+        if without_xctests:
+            commandList.append('--without-xctests')
+
+        ipa_codesign = delegator.run(self.list2cmdline(commandList), timeout=self.command_run_timeout)
 
         click.secho(ipa_codesign.err, dim=True)
 
